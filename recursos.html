@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursos | Raíces Sociales</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Paleta Original */
+            --primary-color: #009688; /* Verde Principal */
+            --primary-dark: #00695c;
+            --secondary-blue: #2196f3;
+            --bg-color: #f3f6f8;
+            --sidebar-width: 250px;
+            --text-dark: #1a202c;
+            --text-muted: #718096;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
+            
+            /* Colores de Etiquetas de Tipo de Recurso */
+            --tag-pdf-bg: #fff5f5; --tag-pdf-text: #e53e3e;
+            --tag-video-bg: #ebf8ff; --tag-video-text: #3182ce;
+            --tag-article-bg: #f0fff4; --tag-article-text: #38a169;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background-color: var(--bg-color); display: flex; height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e0e0e0;
+            position: fixed;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .logo { display: flex; align-items: center; margin-bottom: 40px; color: #004d40; }
+        .logo i { font-size: 24px; margin-right: 10px; color: var(--primary-color); }
+        .logo h2 { font-size: 18px; font-weight: 700; }
+        .logo span { font-size: 12px; color: var(--text-muted); display: block; font-weight: 400; }
+
+        .nav-links { list-style: none; }
+        .nav-links li { margin-bottom: 15px; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            background-color: #e0f2f1;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        .nav-links a i { margin-right: 12px; width: 20px; text-align: center; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px 50px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 28px; color: var(--text-dark); margin-bottom: 5px; }
+        .page-header p { color: var(--text-muted); }
+
+        /* Tarjeta Destacada (Hero) */
+        .featured-resource {
+            background: linear-gradient(135deg, #009688 0%, #2196f3 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(0, 150, 136, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-content { max-width: 60%; position: relative; z-index: 2; }
+        .featured-tag { 
+            background: rgba(255,255,255,0.2); 
+            padding: 5px 12px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: 600; 
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+        .featured-content h2 { font-size: 28px; margin-bottom: 15px; line-height: 1.2; }
+        .featured-content p { font-size: 15px; opacity: 0.9; margin-bottom: 25px; line-height: 1.5; }
+        
+        .featured-icon {
+            font-size: 100px;
+            opacity: 0.2;
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .btn-light {
+            background: white;
+            color: var(--primary-dark);
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .btn-light:hover { transform: translateY(-2px); }
+
+        /* Filtros */
+        .categories { display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 5px; }
+        .cat-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cat-btn.active, .cat-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Grid de Recursos */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid transparent;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+            border-color: #b2dfdb;
+        }
+
+        /* Imagen simulada del recurso (usando color e ícono) */
+        .resource-img-placeholder {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+        
+        /* Colores de fondo para las imágenes */
+        .bg-green { background: #81c784; }
+        .bg-blue { background: #64b5f6; }
+        .bg-orange { background: #ffb74d; }
+        .bg-purple { background: #ba68c8; }
+
+        .resource-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        
+        .resource-tags { display: flex; gap: 8px; margin-bottom: 12px; }
+        .res-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        
+        /* Tipos de tags */
+        .tag-pdf { background: var(--tag-pdf-bg); color: var(--tag-pdf-text); }
+        .tag-video { background: var(--tag-video-bg); color: var(--tag-video-text); }
+        .tag-article { background: var(--tag-article-bg); color: var(--tag-article-text); }
+
+        .resource-body h3 { font-size: 18px; color: var(--text-dark); margin-bottom: 8px; line-height: 1.3; }
+        .resource-body p { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .resource-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            margin-top: auto; /* Empuja el link al fondo */
+        }
+        .resource-link i { margin-left: 5px; transition: margin 0.2s; }
+        .resource-link:hover i { margin-left: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-leaf"></i>
+            <div>
+                <h2>Raíces Sociales</h2>
+                <span>Educación sustentable</span>
+            </div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+            <li><a href="biblioteca.html"><i class="fa-solid fa-book-open"></i> Biblioteca</a></li>
+            <li><a href="glosario.html"><i class="fa-solid fa-book"></i> Glosario</a></li>
+            <li><a href="cuestionarios.html"><i class="fa-solid fa-graduation-cap"></i> Cuestionarios</a></li>
+            <li><a href="recursos.html" class="active"><i class="fa-solid fa-seedling"></i> Sustentabilidad</a></li>
+            <li><a href="#"><i class="fa-solid fa-clock-rotate-left"></i> Línea de Tiempo</a></li>
+            <li><a href="#"><i class="fa-solid fa-trophy"></i> Mi Progreso</a></li>
+            <li><a href="soporte.html"><i class="fa-solid fa-headset"></i> Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="page-header">
+            <h1>Recursos de Sustentabilidad</h1>
+            <p>Herramientas, guías y contenido multimedia para entender el cuidado del planeta.</p>
+        </header>
+
+        <section class="featured-resource">
+            <div class="featured-content">
+                <span class="featured-tag">Lo más importante</span>
+                <h2>Agenda 2030: Objetivos de Desarrollo Sostenible</h2>
+                <p>Descubre la hoja de ruta global de la ONU para erradicar la pobreza, proteger el planeta y asegurar la prosperidad para todos.</p>
+                <a href="#" class="btn-light">Leer Informe Completo</a>
+            </div>
+            <i class="fa-solid fa-earth-americas featured-icon"></i>
+        </section>
+
+        <div class="categories">
+            <button class="cat-btn active">Todos</button>
+            <button class="cat-btn">Energía</button>
+            <button class="cat-btn">Residuos</button>
+            <button class="cat-btn">Agua</button>
+            <button class="cat-btn">Sociedad</button>
+            <button class="cat-btn">Economía</button>
+        </div>
+
+        <div class="resources-grid">
+            
+            <div class="resource-card">
+                <div class="resource-img-placeholder bg-green">
+                    <i class="fa-solid fa-recycle"></i>
+                </div>
+                <div class="resource-body">
+                    <div class="resource-tags">
+                        <span class="res-tag tag-pdf">PDF</span>
+                        <span class="res-tag tag-article">Guía</span>
+                    </div>
+                    <h3>Manual de Reciclaje y Separación</h3>
+                    <p>Aprende a identificar los tipos de plásticos y la forma correcta de separar residuos en casa.</p>
+                    <a href="#" class="resource-link">Descargar Guía <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-img-placeholder bg-blue">
+                    <i class="fa-solid fa-solar-panel"></i>
+                </div>
+                <div class="resource-body">
+                    <div class="resource-tags">
+                        <span class="res-tag tag-video">Video</span>
+                    </div>
+                    <h3>¿Cómo funcionan los Paneles Solares?</h3>
+                    <p>Explicación visual sobre el efecto fotovoltaico y cómo el sol se convierte en electricidad limpia.</p>
+                    <a href="#" class="resource-link">Ver Video <i class="fa-solid fa-play"></i></a>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-img-placeholder bg-orange">
+                    <i class="fa-solid fa-shoe-prints"></i>
+                </div>
+                <div class="resource-body">
+                    <div class="resource-tags">
+                        <span class="res-tag tag-article">Herramienta</span>
+                    </div>
+                    <h3>Calculadora de Huella de Carbono</h3>
+                    <p>Mide el impacto de tus actividades diarias en el medio ambiente y descubre cómo reducirlo.</p>
+                    <a href="#" class="resource-link">Calcular ahora <i class="fa-solid fa-calculator"></i></a>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-img-placeholder bg-purple">
+                    <i class="fa-solid fa-hand-holding-droplet"></i>
+                </div>
+                <div class="resource-body">
+                    <div class="resource-tags">
+                        <span class="res-tag tag-article">Lectura</span>
+                    </div>
+                    <h3>La Crisis del Agua y Soluciones</h3>
+                    <p>Un análisis profundo sobre la escasez hídrica y tecnologías de captación de agua de lluvia.</p>
+                    <a href="#" class="resource-link">Leer Artículo <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-img-placeholder bg-green">
+                    <i class="fa-solid fa-tree"></i>
+                </div>
+                <div class="resource-body">
+                    <div class="resource-tags">
+                        <span class="res-tag tag-pdf">Infografía</span>
+                    </div>
+                    <h3>Reforestación Urbana</h3>
+                    <p>Beneficios de plantar árboles en las ciudades para reducir la temperatura y mejorar el aire.</p>
+                    <a href="#" class="resource-link">Ver Infografía <i class="fa-solid fa-eye"></i></a>
+                </div>
+            </div>
+
+             <div class="resource-card">
+                <div class="resource-img-placeholder bg-blue">
+                    <i class="fa-solid fa-shirt"></i>
+                </div>
+                <div class="resource-body">
+                    <div class="resource-tags">
+                        <span class="res-tag tag-video">Documental</span>
+                    </div>
+                    <h3>Moda Rápida vs. Moda Sostenible</h3>
+                    <p>El impacto de la industria textil en el planeta y alternativas de consumo responsable.</p>
+                    <a href="#" class="resource-link">Ver Documental <i class="fa-solid fa-play"></i></a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>
