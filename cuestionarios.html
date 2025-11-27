@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionarios | Raíces Sociales</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Paleta Original */
+            --primary-color: #009688;
+            --primary-dark: #00695c;
+            --bg-color: #f3f6f8;
+            --sidebar-width: 250px;
+            --text-dark: #1a202c;
+            --text-muted: #718096;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
+            
+            /* Etiquetas de Nivel */
+            --badge-easy-bg: #e6fffa;
+            --badge-easy-text: #2c7a7b;
+            --badge-med-bg: #fffaf0;
+            --badge-med-text: #c05621;
+            --badge-hard-bg: #fff5f5;
+            --badge-hard-text: #c53030;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background-color: var(--bg-color); display: flex; height: 100vh; }
+
+        /* --- SIDEBAR (Consistente) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e0e0e0;
+            position: fixed;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .logo { display: flex; align-items: center; margin-bottom: 40px; color: #004d40; }
+        .logo i { font-size: 24px; margin-right: 10px; color: var(--primary-color); }
+        .logo h2 { font-size: 18px; font-weight: 700; }
+        .logo span { font-size: 12px; color: var(--text-muted); display: block; font-weight: 400; }
+
+        .nav-links { list-style: none; }
+        .nav-links li { margin-bottom: 15px; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            background-color: #e0f2f1;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        .nav-links a i { margin-right: 12px; width: 20px; text-align: center; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px 50px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h1 { font-size: 28px; color: var(--text-dark); margin-bottom: 5px; }
+        .page-header p { color: var(--text-muted); }
+
+        /* Grid de Cuestionarios */
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding-bottom: 40px;
+        }
+
+        /* Tarjeta de Cuestionario */
+        .quiz-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            padding: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-color: #b2dfdb;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .quiz-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background-color: #e0f2f1;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .quiz-level {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .level-basic { background-color: var(--badge-easy-bg); color: var(--badge-easy-text); }
+        .level-med { background-color: var(--badge-med-bg); color: var(--badge-med-text); }
+        .level-hard { background-color: var(--badge-hard-bg); color: var(--badge-hard-text); }
+
+        .quiz-card h3 {
+            font-size: 18px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .quiz-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .quiz-meta i { margin-right: 5px; }
+
+        /* Barra de Progreso (Vacia) */
+        .progress-container {
+            width: 100%;
+            background-color: #edf2f7;
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            width: 0%; /* Vacío por defecto */
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+
+        /* Botón Iniciar */
+        .start-btn {
+            margin-top: auto; /* Empuja el botón al fondo */
+            width: 100%;
+            padding: 12px;
+            background-color: white;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .start-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-leaf"></i>
+            <div>
+                <h2>Raíces Sociales</h2>
+                <span>Educación sustentable</span>
+            </div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+            <li><a href="biblioteca.html"><i class="fa-solid fa-book-open"></i> Biblioteca</a></li>
+            <li><a href="glosario.html"><i class="fa-solid fa-book"></i> Glosario</a></li>
+            <li><a href="cuestionarios.html" class="active"><i class="fa-solid fa-graduation-cap"></i> Cuestionarios</a></li>
+            <li><a href="recursos.html"><i class="fa-solid fa-seedling"></i> Sustentabilidad</a></li>
+            <li><a href="linea_tiempo.html"><i class="fa-solid fa-clock-rotate-left"></i> Línea de Tiempo</a></li>
+            <li><a href="progreso.html"><i class="fa-solid fa-trophy"></i> Mi Progreso</a></li>
+            <li><a href="soporte.html"><i class="fa-solid fa-headset"></i> Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="page-header">
+            <div>
+                <h1>Cuestionarios Interactivos</h1>
+                <p>Pon a prueba tus conocimientos. Selecciona un tema para comenzar.</p>
+            </div>
+            <div style="position: relative;">
+                <input type="text" placeholder="Buscar quiz..." style="padding: 10px 15px 10px 35px; border-radius: 8px; border: 1px solid #e2e8f0; outline: none;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 12px; color: #a0aec0; font-size: 14px;"></i>
+            </div>
+        </header>
+
+        <div class="quiz-grid">
+            
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-earth-americas"></i></div>
+                    <span class="quiz-level level-basic">Básico</span>
+                </div>
+                <h3>Test de Conocimiento</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 10 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 10 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/1FAIpQLSeINq9md8f7dfpHumjcTCaqP5LjWhGzvXy_vjL03Xo6Iksyew/viewform?usp=header', 'Test de Conocimiento', 'test')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-recycle"></i></div>
+                    <span class="quiz-level level-basic">Básico</span>
+                </div>
+                <h3>Economía Circular: Fundamentos</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 15 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 12 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_CIRCULAR/viewform?embedded=true', 'Economía Circular: Fundamentos - Formulario', 'circular')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <span class="quiz-level level-med">Intermedio</span>
+                </div>
+                <h3>Energías Renovables y No Renovables</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 20 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 15 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_ENERGIAS/viewform?embedded=true', 'Energías Renovables y No Renovables - Formulario', 'energias')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-temperature-arrow-up"></i></div>
+                    <span class="quiz-level level-med">Intermedio</span>
+                </div>
+                <h3>Cambio Climático y Efecto Invernadero</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 25 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 18 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_CLIMA/viewform?embedded=true', 'Cambio Climático y Efecto Invernadero - Formulario', 'clima')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-users-line"></i></div>
+                    <span class="quiz-level level-hard">Avanzado</span>
+                </div>
+                <h3>Derechos Humanos y Sociedad</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 30 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 20 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_DH/viewform?embedded=true', 'Derechos Humanos y Sociedad - Formulario', 'dh')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <span class="quiz-level level-basic">Básico</span>
+                </div>
+                <h3>Los 17 Objetivos (ODS) de la ONU</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 12 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 17 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_ODS/viewform?embedded=true', 'Los 17 ODS - Formulario', 'ods')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-water"></i></div>
+                    <span class="quiz-level level-med">Intermedio</span>
+                </div>
+                <h3>Gestión del Agua y Recursos Hídricos</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 18 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 14 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_AGUA/viewform?embedded=true', 'Gestión del Agua y Recursos Hídricos - Formulario', 'agua')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-landmark"></i></div>
+                    <span class="quiz-level level-hard">Avanzado</span>
+                </div>
+                <h3>Historia de las Políticas Ambientales</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 35 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 25 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_POLITICAS/viewform?embedded=true', 'Historia de las Políticas Ambientales - Formulario', 'politicas')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-leaf"></i></div>
+                    <span class="quiz-level level-basic">Básico</span>
+                </div>
+                <h3>Biodiversidad Local</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 10 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 10 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_BIODIV/viewform?embedded=true', 'Biodiversidad Local - Formulario', 'biodiv')">Iniciar Cuestionario</button>
+            </div>
+
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <div class="quiz-icon"><i class="fa-solid fa-city"></i></div>
+                    <span class="quiz-level level-med">Intermedio</span>
+                </div>
+                <h3>Ciudades y Comunidades Sostenibles</h3>
+                <div class="quiz-meta">
+                    <span><i class="fa-regular fa-clock"></i> 22 min</span>
+                    <span><i class="fa-regular fa-circle-question"></i> 15 preguntas</span>
+                </div>
+                <div class="progress-container"><div class="progress-bar"></div></div>
+                <button class="start-btn" onclick="openForm('https://docs.google.com/forms/d/e/FORM_ID_CIUDADES/viewform?embedded=true', 'Ciudades y Comunidades Sostenibles - Formulario', 'ciudades')">Iniciar Cuestionario</button>
+            </div>
+
+        </div>
+    </main>
+</main>
+
+    <!-- Modal para abrir formularios (ej. Google Forms) embebidos -->
+    <div id="formModal" class="modal" style="display:none; position:fixed; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.7); z-index:1000;">
+        <div style="position:relative; width:90%; height:90%; margin:2% auto; background:#fff; border-radius:8px; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="padding:12px 16px; background:#fff; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <strong id="formModalTitle">Formulario</strong>
+                    <button id="markDoneBtn" onclick="markQuizCompleted()" style="background:#e6fffa; border:1px solid #b2dfdb; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:600; display:none;">Marcar como completado</button>
+                </div>
+                <div>
+                    <button onclick="closeForm()" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+                </div>
+            </div>
+            <iframe id="formViewer" src="" style="flex:1; border:0; width:100%; height:100%; background:#f6f6f6;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Configurable: si tienes un endpoint de servidor (Apps Script u otro) pon la URL aquí.
+        const PROGRESS_API_URL = null;
+
+        let lastOpenedQuizKey = null;
+
+        function openForm(url, title, quizKey) {
+            const modal = document.getElementById('formModal');
+            const viewer = document.getElementById('formViewer');
+            const modalTitle = document.getElementById('formModalTitle');
+            const markBtn = document.getElementById('markDoneBtn');
+            viewer.src = url;
+            if (title) modalTitle.innerText = title;
+            lastOpenedQuizKey = quizKey || null;
+            // Ocultar botón manual (ahora se detecta automáticamente el envío)
+            markBtn.style.display = 'none';
+            modal.style.display = 'block';
+        }
+
+        function closeForm() {
+            const modal = document.getElementById('formModal');
+            const viewer = document.getElementById('formViewer');
+            viewer.src = '';
+            modal.style.display = 'none';
+            lastOpenedQuizKey = null;
+        }
+
+        // Detector automático: escucha mensajes del iframe cuando Google Forms se completa
+        window.addEventListener('message', function(event) {
+            // Google Forms envía eventos cuando se completa el envío
+            // Nota: Google Forms envía mensajes desde el iframe, así que verificamos origen
+            if (event.data && typeof event.data === 'string' && event.data.includes('complete')) {
+                // Detectamos que el formulario fue enviado
+                markQuizCompletedAutomatically();
+            }
+        });
+
+        // Alternativa: detectar cambios en el DOM del iframe o usar un intervalo simple
+        // para verificar si se mostró la página de confirmación ("Gracias por completar...")
+        function monitorFormCompletion() {
+            const viewer = document.getElementById('formViewer');
+            if (!viewer) return;
+
+            const checkCompletion = setInterval(() => {
+                try {
+                    // Intentar acceder al contenido del iframe (solo si es del mismo origin)
+                    const iframeDoc = viewer.contentDocument || viewer.contentWindow.document;
+                    if (!iframeDoc) return; // cross-origin, no acceso
+
+                    // Buscar señales de que el formulario fue completado
+                    const thankYouText = iframeDoc.body.innerText;
+                    if (thankYouText && (thankYouText.includes('Gracias') || thankYouText.includes('gracias') || 
+                                         thankYouText.includes('respuesta registrada') || thankYouText.includes('Thank you'))) {
+                        clearInterval(checkCompletion);
+                        markQuizCompletedAutomatically();
+                    }
+                } catch (e) {
+                    // Cross-origin o acceso denegado; Google Forms no permite acceso directo
+                    // en este caso, usaremos un enfoque de tiempo (más abajo)
+                }
+            }, 1000); // Verificar cada segundo
+
+            // Limpiar intervalo cuando se cierra el modal
+            const observer = new MutationObserver(() => {
+                const modal = document.getElementById('formModal');
+                if (modal.style.display === 'none') {
+                    clearInterval(checkCompletion);
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.getElementById('formModal'), { attributes: true, attributeFilter: ['style'] });
+        }
+
+        // Marca automáticamente el quiz como completado
+        function markQuizCompletedAutomatically() {
+            if (!lastOpenedQuizKey) return;
+
+            const raw = localStorage.getItem('quizProgress');
+            const obj = raw ? JSON.parse(raw) : {};
+            obj[lastOpenedQuizKey] = true;
+            localStorage.setItem('quizProgress', JSON.stringify(obj));
+
+            if (PROGRESS_API_URL) {
+                fetch(PROGRESS_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quizKey: lastOpenedQuizKey })
+                }).catch(err => console.warn('No se pudo notificar al servidor:', err));
+            }
+
+            // Mostrar notificación visual
+            showCompletionNotification();
+            updateQuizProgressUI();
+
+            // Cerrar modal automáticamente después de 2 segundos
+            setTimeout(() => {
+                closeForm();
+            }, 2000);
+        }
+
+        // Mostrar notificación de completado
+        function showCompletionNotification() {
+            const modal = document.getElementById('formModal');
+            if (!modal) return;
+
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10001;
+                animation: slideIn 0.3s ease;
+            `;
+            notif.innerText = '✓ Cuestionario completado. Progreso actualizado.';
+            document.body.appendChild(notif);
+
+            // Añadir animación CSS
+            const style = document.createElement('style');
+            style.innerText = `@keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
+            document.head.appendChild(style);
+
+            setTimeout(() => notif.remove(), 4000);
+        }
+
+        // Obtiene el progreso desde API o localStorage
+        async function getQuizProgress() {
+            if (PROGRESS_API_URL) {
+                try {
+                    const res = await fetch(PROGRESS_API_URL + '?action=status');
+                    if (res.ok) return await res.json();
+                } catch (e) {
+                    console.warn('Error consultando API, usando localStorage', e);
+                }
+            }
+            const raw = localStorage.getItem('quizProgress');
+            const obj = raw ? JSON.parse(raw) : {};
+            const completed = Object.values(obj).filter(Boolean).length;
+            const total = 10; // Total de cuestionarios
+            return { completed, total, percentage: Math.round((completed / total) * 100), details: obj };
+        }
+
+        // Actualiza los contadores en todas las páginas
+        async function updateQuizProgressUI() {
+            const data = await getQuizProgress();
+            
+            // Actualizar contador en index.html
+            const quizCountEl = document.getElementById('quiz-count');
+            if (quizCountEl) quizCountEl.innerText = data.completed;
+
+            // Actualizar valor en progreso.html
+            const progEl = document.getElementById('quiz-progress-value');
+            if (progEl) progEl.innerText = data.completed;
+
+            // Actualizar barra de progreso en progreso.html
+            const progBar = document.getElementById('quiz-progress-bar');
+            if (progBar) progBar.style.width = data.percentage + '%';
+
+            const progPercent = document.getElementById('quiz-progress-percent');
+            if (progPercent) progPercent.innerText = data.percentage + '%';
+
+            return data;
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('formModal');
+            if (!modal) return;
+            if (event.target === modal) closeForm();
+        });
+
+        // Inicializar al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            updateQuizProgressUI();
+            // Iniciar monitoreo cuando se abre un formulario
+            const originalOpenForm = openForm;
+            openForm = function(url, title, quizKey) {
+                originalOpenForm(url, title, quizKey);
+                monitorFormCompletion();
+            };
+        });
+    </script>
+</body>
+</html>
