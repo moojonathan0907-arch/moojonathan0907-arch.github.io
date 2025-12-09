@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca | Raíces Sociales</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* --- Misma Paleta de Colores --- */
+            --primary-gradient: linear-gradient(90deg, #009688 0%, #006064 100%);
+            --bg-color: #f3f6f8;
+            --sidebar-width: 250px;
+            --text-dark: #1a202c;
+            --text-muted: #718096;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --green-accent: #009688;
+            --green-light-bg: #e0f2f1;
+            
+            /* Nuevos colores para las etiquetas de los libros */
+            --tag-purple-bg: #f3e5f5;
+            --tag-purple-text: #9c27b0;
+            --tag-blue-bg: #e3f2fd;
+            --tag-blue-text: #2196f3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            height: 100vh;
+        }
+
+        /* --- SIDEBAR (Se mantiene igual) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e0e0e0;
+            position: fixed;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            color: #004d40;
+        }
+
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+            color: var(--green-accent);
+        }
+
+        .logo h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+            font-weight: 400;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 15px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: var(--green-light-bg);
+            color: #00695c;
+            font-weight: 600;
+        }
+
+        .nav-links a i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px 50px;
+            width: 100%;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .library-header {
+            margin-bottom: 35px;
+        }
+
+        .library-header h1 {
+            font-size: 28px;
+            color: var(--text-dark);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .library-header p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            border: 1px solid #e2e8f0;
+            background-color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+            box-shadow: var(--card-shadow);
+        }
+
+        .search-input:focus {
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            background-color: transparent;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .tab-btn.active {
+            background-color: var(--green-accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 150, 136, 0.2);
+        }
+        
+        .tab-btn:not(.active):hover {
+             background-color: #e2e8f0;
+             color: var(--text-dark);
+        }
+
+        .filters-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            background-color: #fff;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .filter-tag.active {
+            border-color: var(--green-accent);
+            color: var(--green-accent);
+            background-color: var(--green-light-bg);
+            font-weight: 600;
+        }
+
+        .filter-tag:hover:not(.active) {
+            border-color: #cbd5e0;
+            background-color: #f7fafc;
+        }
+
+        /* --- ESTILOS PARA PESTAÑAS (TABS) --- */
+        .tab-content {
+            display: none;
+            padding-top: 20px; /* Espacio para que no se pegue a las pestañas */
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+
+        /* --- NUEVOS ESTILOS PARA LAS TARJETAS DE LIBROS --- */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding-bottom: 40px;
+        }
+
+        .book-card {
+            background-color: #fff;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+        }
+
+        .book-cover {
+            height: 180px;
+            background-color: #e0e0e0;
+            background-position: center;
+            background-size: cover;
+            position: relative;
+        }
+        
+        /* Un degradado sutil sobre la imagen para que el texto se lea mejor si lo hubiera */
+        .book-cover::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.1));
+        }
+
+        .book-content {
+            padding: 20px;
+        }
+
+        .book-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .book-tag {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+        }
+        
+        .book-tag i { margin-right: 6px; font-size: 10px; }
+
+        .tag-purple { background-color: var(--tag-purple-bg); color: var(--tag-purple-text); }
+        .tag-blue { background-color: var(--tag-blue-bg); color: var(--tag-blue-text); }
+
+        .book-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            line-height: 1.3;
+            /* Limitar a 2 líneas y poner puntos suspensivos */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-author {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .book-author i {
+            margin-right: 8px;
+            color: #a0aec0;
+        }
+
+        .book-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            /* Limitar a 3 líneas */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-meta {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .book-meta span {
+            display: flex;
+            align-items: center;
+        }
+
+        .book-meta i {
+            margin-right: 8px;
+            color: #a0aec0;
+        }
+
+        /* --- NUEVO: ESTILOS PARA LA VENTANA MODAL (POPUP) --- */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8); /* Fondo oscuro */
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            height: 90%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title { font-weight: 700; font-size: 18px; color: var(--text-dark); }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover { color: #000; }
+
+        /* El visor de PDF (iframe) */
+        .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #f3f3f3;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-leaf"></i>
+            <div>
+                <h2>Raíces Sociales</h2>
+                <span>Educación sustentable</span>
+            </div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+            <li><a href="biblioteca.html" class="active"><i class="fa-solid fa-book-open"></i> Biblioteca</a></li>
+            <li><a href="glosario.html"><i class="fa-solid fa-book"></i> Glosario</a></li>
+            <li><a href="cuestionarios.html"><i class="fa-solid fa-graduation-cap"></i> Cuestionarios</a></li>
+            <li><a href="recursos.html"><i class="fa-solid fa-seedling"></i> Sustentabilidad</a></li>
+            <li><a href="linea_tiempo.html"><i class="fa-solid fa-clock-rotate-left"></i> Línea de Tiempo</a></li>
+            <li><a href="progreso.html"><i class="fa-solid fa-trophy"></i> Mi Progreso</a></li>
+            <li><a href="referencias.html"><i class="fa-solid fa-book-bookmark"></i> Referencias</a></li>
+            <li><a href="soporte.html"><i class="fa-solid fa-headset"></i> Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="library-header">
+            <h1>Biblioteca de Conocimiento</h1>
+            <p>Explora libros, conceptos, biografías y recursos educativos.</p>
+        </header>
+
+        <section class="search-container">
+            <input type="text" class="search-input" placeholder="Buscar libros, términos, personajes o temas...">
+        </section>
+
+        <section class="tabs-container">
+            <button class="tab-btn active" data-target="libros-content">Libros</button>
+            <button class="tab-btn" data-target="glosario-content">Glosario</button>
+        </section>
+
+        <div id="libros-content" class="tab-content active">
+            <section class="books-grid">
+                
+                <article class="book-card" onclick="openBook('libro_ciencias.pdf', 'Ciencias Naturales y Medio Ambiente')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1507668077129-56e32842fceb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple" style="background-color: #e3f2fd; color: #1565c0;"><i class="fa-solid fa-flask"></i> Ciencia</span>
+                        <span class="book-tag tag-blue">Básico</span>
+                    </div>
+                    <h3 class="book-title">Ciencias Naturales y Medio Ambiente</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>El Bibliotecom</span></div>
+                    <p class="book-description">Un recorrido por las disciplinas científicas: astronomía, biología, física y geología, explicando la composición del universo.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-file-lines"></i> 4 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_agenda2030.pdf', 'Agenda 2030 y los ODS')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1532375810709-75b1da00537c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1476&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-earth-americas"></i> Sociedad</span>
+                        <span class="book-tag tag-blue">Política</span>
+                    </div>
+                    <h3 class="book-title">Agenda 2030 y los Objetivos de Desarrollo Sostenible</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>CEPAL / ONU</span></div>
+                    <p class="book-description">Una oportunidad para América Latina y el Caribe. Análisis detallado de los 17 ODS para transformar el desarrollo.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2016</span><span><i class="fa-regular fa-file-lines"></i> 50 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_desarrollo.pdf', 'Desarrollo Sustentable: Conceptos')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple" style="background-color: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-leaf"></i> Sustentabilidad</span>
+                        <span class="book-tag tag-blue">Visual</span>
+                    </div>
+                    <h3 class="book-title">Desarrollo Sustentable: Conceptos Básicos</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>SBDA</span></div>
+                    <p class="book-description">Material visual sobre los cuatro pilares del desarrollo: económico, social, ambiental y cultural.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-file-lines"></i> 11 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_intro.pdf', 'Introducción al Desarrollo Sustentable')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1529390079861-591de354f2f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple" style="background-color: #fff3e0; color: #e65100;"><i class="fa-solid fa-magnifying-glass"></i> Investigación</span>
+                        <span class="book-tag tag-blue">México</span>
+                    </div>
+                    <h3 class="book-title">Introducción al Desarrollo Sustentable</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>P. Gudiño y A. Sánchez</span></div>
+                    <p class="book-description">Reporte de investigación sobre el origen del concepto, sus dimensiones y los desafíos específicos de México.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2019</span><span><i class="fa-regular fa-file-lines"></i> 63 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_dialnet.pdf', 'Crisis Ecológica y Desarrollo')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1508138221679-760a23a2285b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1374&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-scale-balanced"></i> Ética</span>
+                        <span class="book-tag tag-blue">Sociología</span>
+                    </div>
+                    <h3 class="book-title">El Desarrollo Sustentable: Crisis Ecológica</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Gregorio Raidán Martínez</span></div>
+                    <p class="book-description">Análisis sobre la crisis ambiental como un problema moral y la necesidad de armonizar la relación sociedad-naturaleza.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-file-lines"></i> 10 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_energias.pdf', 'Energías Renovables')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1374&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple" style="background-color: #e0f7fa; color: #006064;"><i class="fa-solid fa-bolt"></i> Energía</span>
+                        <span class="book-tag tag-blue">Tecnología</span>
+                    </div>
+                    <h3 class="book-title">Energías Renovables en el Ámbito Bibliotecario</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Dr. Oswaldo Guzmán López</span></div>
+                    <p class="book-description">Propuesta de la Universidad Veracruzana sobre el uso de energía solar, eólica y arquitectura sustentable.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-file-lines"></i> 22 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_derechos_humanos.pdf', 'Derechos Humanos y Desarrollo Sustentable')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1472&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-scale-balanced"></i> Legal</span>
+                        <span class="book-tag tag-blue">SCJN</span>
+                    </div>
+                    <h3 class="book-title">Derechos Humanos y Desarrollo Sustentable</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Federico J. Arce Navarro</span></div>
+                    <p class="book-description">Análisis de la relación entre el medio ambiente y los derechos fundamentales, considerando el desarrollo sustentable como herramienta de transformación social.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2018</span><span><i class="fa-regular fa-file-lines"></i> 203 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_edomex_sostenible.pdf', 'Foros EDOMEX Sostenible 2021')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1542601906990-b4d3fb7d5b43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1374&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple" style="background-color: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-leaf"></i> Gobierno</span>
+                        <span class="book-tag tag-blue">Local</span>
+                    </div>
+                    <h3 class="book-title">Foros EDOMEX Sostenible</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Gobierno del Estado de México</span></div>
+                    <p class="book-description">Memoria de los foros sobre áreas naturales protegidas, manejo de residuos, contaminación atmosférica y bienestar animal en el Estado de México.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2021</span><span><i class="fa-regular fa-file-lines"></i> 54 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_debate_desarrollo.pdf', 'El Debate sobre el Desarrollo Sostenible')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-comments"></i> Educación</span>
+                        <span class="book-tag tag-blue">Teoría</span>
+                    </div>
+                    <h3 class="book-title">El Debate sobre el Desarrollo Sostenible</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Tupiño Salinas & De Araújo</span></div>
+                    <p class="book-description">Reflexión sobre el origen, concepto y fundamentación epistemológica del desarrollo sostenible y sus implicaciones para la educación ambiental.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2017</span><span><i class="fa-regular fa-file-lines"></i> 13 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_tecnologia_sustentable.pdf', 'La Tecnología como Nuevo Escenario')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1472&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple" style="background-color: #e3f2fd; color: #1565c0;"><i class="fa-solid fa-microchip"></i> Tecnología</span>
+                        <span class="book-tag tag-blue">Innovación</span>
+                    </div>
+                    <h3 class="book-title">La Tecnología como Nuevo Escenario</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>K. Martínez Garduño et al.</span></div>
+                    <p class="book-description">Propuesta para considerar a la tecnología como un cuarto escenario del desarrollo sustentable, analizando su impacto natural, social y económico.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2024</span><span><i class="fa-regular fa-file-lines"></i> 12 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_etica_responsabilidad.pdf', 'Ética y Responsabilidad Social')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1632&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-hand-holding-heart"></i> Ética</span>
+                        <span class="book-tag tag-blue">Empresa</span>
+                    </div>
+                    <h3 class="book-title">Ética y Responsabilidad Social en las Organizaciones</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Lucero Serrato Obregón</span></div>
+                    <p class="book-description">Reflexión teórica sobre cómo la ética empresarial y la responsabilidad social corporativa contribuyen a la sustentabilidad integral.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2016</span><span><i class="fa-regular fa-file-lines"></i> 6 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_sector_forestal.pdf', 'Noticias del Sector Forestal 2023')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1448375240586-dfd8d395ea6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple" style="background-color: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-tree"></i> Forestal</span>
+                        <span class="book-tag tag-blue">Informe</span>
+                    </div>
+                    <h3 class="book-title">Noticias del Sector Forestal: Bosques para el Bienestar</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>CONAFOR</span></div>
+                    <p class="book-description">Informe semestral sobre manejo forestal comunitario, reforestación, control de incendios y acciones de conservación en México.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2023</span><span><i class="fa-regular fa-file-lines"></i> 74 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_educacion_geografia.pdf', 'Educación Ambiental Integral')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1509062522246-37559cc792f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-chalkboard-user"></i> Docencia</span>
+                        <span class="book-tag tag-blue">Geografía</span>
+                    </div>
+                    <h3 class="book-title">Educación Ambiental Integral y Geografía</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Acosta, Pérez & Nin</span></div>
+                    <p class="book-description">Experiencia de formación docente sobre la Ley de Educación Ambiental Integral en Argentina y su aplicación en la enseñanza.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2024</span><span><i class="fa-regular fa-file-lines"></i> 21 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_empresas_sustentables.pdf', 'Empresas Sustentables')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1615&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-briefcase"></i> Negocios</span>
+                        <span class="book-tag tag-blue">UNAM</span>
+                    </div>
+                    <h3 class="book-title">No habrá Desarrollo sin Empresas Sustentables</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>C3 UNAM / Evelyn Ayala</span></div>
+                    <p class="book-description">Artículo sobre la urgencia de que las empresas adopten políticas horizontales para mitigar impactos y colaboren con el desarrollo sostenible.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2021</span><span><i class="fa-regular fa-file-lines"></i> 3 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_principios_sociedad.pdf', 'Principios de una Sociedad Sustentable')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=1632&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-users"></i> Sociedad</span>
+                        <span class="book-tag tag-blue">UNESCO</span>
+                    </div>
+                    <h3 class="book-title">Principios de una Sociedad Sustentable</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Programa UNESCO</span></div>
+                    <p class="book-description">Resumen de los principios esenciales en las dimensiones social, ecológica, económica y política para construir una sociedad sustentable.</p>
+                    <div class="book-meta"><span><i class="fa-solid fa-infinity"></i> s.f.</span><span><i class="fa-regular fa-file-lines"></i> 2 págs.</span></div>
+                </div>
+            </article>
+
+             <article class="book-card" onclick="openBook('libro_economia_sustentabilidad.pdf', 'Economía y Sustentabilidad')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1526304640155-b46b538b2b95?ixlib=rb-4.0.3&auto=format&fit=crop&w=1488&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-coins"></i> Economía</span>
+                        <span class="book-tag tag-blue">Teoría</span>
+                    </div>
+                    <h3 class="book-title">Economía y Sustentabilidad</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Desconocido</span></div>
+                    <p class="book-description">Análisis teórico sobre la administración responsable de recursos, contrastando la economía ambiental neoclásica con la economía ecológica.</p>
+                    <div class="book-meta"><span><i class="fa-solid fa-infinity"></i> s.f.</span><span><i class="fa-regular fa-file-lines"></i> 19 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_foro_mundial.pdf', 'Foro Mundial de Desarrollo Sostenible')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple"><i class="fa-solid fa-globe"></i> Global</span>
+                        <span class="book-tag tag-blue">Evento</span>
+                    </div>
+                    <h3 class="book-title">Segundo Foro Mundial de Desarrollo Sostenible</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>WSDF / POP</span></div>
+                    <p class="book-description">Documento sobre el evento realizado en Monterrey, abordando el riesgo de los impactos del cambio climático y la Agenda 2030.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2019</span><span><i class="fa-regular fa-file-lines"></i> 5 págs.</span></div>
+                </div>
+            </article>
+
+            <article class="book-card" onclick="openBook('libro_formacion_etica.pdf', 'Formación Ética para el Desarrollo')">
+                <div class="book-cover" style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');"></div>
+                <div class="book-content">
+                    <div class="book-tags">
+                        <span class="book-tag tag-purple" style="background-color: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-graduation-cap"></i> Educación</span>
+                        <span class="book-tag tag-blue">Investigación</span>
+                    </div>
+                    <h3 class="book-title">Formación Ética para un Desarrollo Sustentable</h3>
+                    <div class="book-author"><i class="fa-regular fa-user"></i><span>Díaz, Montaner & Prieto</span></div>
+                    <p class="book-description">Artículo de investigación que explora la importancia de la conciencia ética en la formación universitaria para lograr la sustentabilidad.</p>
+                    <div class="book-meta"><span><i class="fa-regular fa-calendar"></i> 2007</span><span><i class="fa-regular fa-file-lines"></i> 13 págs.</span></div>
+                </div>
+            </article>
+            </section>
+        </div>
+
+        <div id="glosario-content" class="tab-content">
+            <!-- El contenido del glosario se puede cargar aquí dinámicamente o estar presente desde el inicio -->
+            <h2>Glosario de Términos</h2>
+            <p>Esta sección contendrá definiciones y explicaciones de conceptos clave sobre sustentabilidad y desarrollo. ¡Próximamente!</p>
+        </div>
+
+    </main>
+
+    <!-- Modal para visualizar PDFs -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalTitle" class="modal-title">Visualizador de Documentos</span>
+                <span class="close-btn" onclick="closeBook()">&times;</span>
+            </div>
+            <iframe id="pdfViewer" class="pdf-viewer" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        function openBook(pdfUrl, title) {
+            const modal = document.getElementById('pdfModal');
+            const viewer = document.getElementById('pdfViewer');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            // --- NUEVO: GUARDAR PROGRESO ---
+            let readBooks = JSON.parse(localStorage.getItem('readBooks')) || [];
+            // Si el libro no está en la lista, lo agregamos
+            if (!readBooks.includes(title)) {
+                readBooks.push(title);
+                localStorage.setItem('readBooks', JSON.stringify(readBooks));
+            }
+            // --------------------------------
+            
+            viewer.src = pdfUrl;
+            if(title) modalTitle.innerText = title;
+            modal.style.display = 'block';
+        }
+
+        function closeBook() {
+            const modal = document.getElementById('pdfModal');
+            const viewer = document.getElementById('pdfViewer');
+            modal.style.display = 'none';
+            viewer.src = '';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('pdfModal');
+            if (event.target == modal) {
+                closeBook();
+            }
+        }
+
+        // Lógica para el cambio de pestañas
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabsContainer = document.querySelector('.tabs-container');
+            
+            tabsContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('tab-btn')) {
+                    const clickedTab = e.target;
+                    if (clickedTab.classList.contains('active')) return;
+
+                    // Desactivar pestaña y contenido activos
+                    const activeTab = document.querySelector('.tab-btn.active');
+                    const activeContent = document.querySelector('.tab-content.active');
+                    activeTab.classList.remove('active');
+                    activeContent.classList.remove('active');
+
+                    // Activar nueva pestaña y contenido
+                    clickedTab.classList.add('active');
+                    const targetId = clickedTab.dataset.target;
+                    document.getElementById(targetId).classList.add('active');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
