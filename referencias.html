@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referencias | Raíces Sociales</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(90deg, #009688 0%, #006064 100%);
+            --bg-color: #f3f6f8;
+            --sidebar-width: 250px;
+            --text-dark: #1a202c;
+            --text-muted: #718096;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
+            --green-accent: #009688;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); display: flex; height: 100vh; }
+
+        /* SIDEBAR */
+        .sidebar { width: var(--sidebar-width); background-color: #fff; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #e0e0e0; position: fixed; height: 100%; z-index: 10; }
+        /* --- ESTILO DEL LOGO (Igual al Index) --- */
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            color: #004d40;
+        }
+
+        .logo-img {
+            width: 40px;
+            height: 40px; /* Asegura que sea cuadrado */
+            object-fit: contain;
+            margin-right: 12px; /* Espacio exacto */
+            display: block;
+        }
+
+        .logo h2 { font-size: 18px; font-weight: 700; margin: 0; }
+        .logo span { font-size: 12px; color: var(--text-muted); display: block; font-weight: 400; 
+        }
+        .nav-links { list-style: none; }
+        .nav-links li { margin-bottom: 15px; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 15px; display: flex; align-items: center; padding: 10px 12px; border-radius: 8px; transition: all 0.3s; font-weight: 500; }
+        .nav-links a:hover, .nav-links a.active { background-color: #e0f2f1; color: #00695c; font-weight: 600; }
+        .nav-links a i { margin-right: 12px; width: 20px; text-align: center; }
+
+        /* MAIN CONTENT */
+        .main-content { margin-left: var(--sidebar-width); padding: 40px 60px; width: 100%; overflow-y: auto; }
+        
+        .page-header { margin-bottom: 40px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; }
+        .page-header h1 { font-size: 28px; color: var(--text-dark); font-weight: 700; margin-bottom: 10px; }
+        .page-header p { color: var(--text-muted); font-size: 16px; }
+
+        /* LISTA DE REFERENCIAS */
+        .ref-container {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            max-width: 900px;
+        }
+
+        .ref-item {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .ref-item:last-child { border-bottom: none; }
+
+        .ref-icon {
+            min-width: 40px;
+            height: 40px;
+            background-color: #e0f2f1;
+            color: var(--green-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 18px;
+        }
+
+        .ref-text { font-size: 15px; color: #4a5568; line-height: 1.6; }
+        
+        /* Estilo APA: Título en cursiva */
+        .ref-title { font-style: italic; color: var(--text-dark); font-weight: 500; }
+        .ref-author { font-weight: 600; color: var(--text-dark); }
+
+        .source-link {
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 13px;
+            color: var(--green-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .source-link:hover { text-decoration: underline; }
+
+        .ref-section-title {
+            font-size: 22px;
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--green-accent);
+        }
+        .ref-section-title:first-of-type {
+            margin-top: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="logo.png" alt="Logo" class="logo-img">
+            
+            <div>
+                <h2>Raíces Sociales</h2>
+                <span>Educación sustentable</span>
+            </div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+            <li><a href="biblioteca.html"><i class="fa-solid fa-book-open"></i> Biblioteca</a></li>
+            <li><a href="glosario.html"><i class="fa-solid fa-book"></i> Glosario</a></li>
+            <li><a href="cuestionarios.html"><i class="fa-solid fa-graduation-cap"></i> Cuestionarios</a></li>
+            <li><a href="recursos.html"><i class="fa-solid fa-seedling"></i> Sustentabilidad</a></li>
+            <li><a href="linea_tiempo.html"><i class="fa-solid fa-clock-rotate-left"></i> Línea de Tiempo</a></li>
+            <li><a href="progreso.html"><i class="fa-solid fa-trophy"></i> Mi Progreso</a></li>
+            <li><a href="referencias.html" class="active"><i class="fa-solid fa-book-bookmark"></i> Referencias</a></li>
+            <li><a href="soporte.html"><i class="fa-solid fa-headset"></i> Contacto</a></li>
+
+            <li id="userProfile" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; text-align: center;">
+                <img id="userPhoto" src="" alt="Perfil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid var(--primary-color);">
+                <div id="userName" style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">Usuario</div>
+                <a href="#" onclick="logoutGoogle()" style="color: #ef5350; font-size: 12px; text-decoration: none; display: inline-block;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                </a>
+            </li>
+
+            <li id="loginBtnLi" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+                <a href="#" onclick="loginGoogle()">
+                    <i class="fa-brands fa-google"></i> Iniciar Sesión
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <header class="page-header">
+            <h1>Fuentes y Referencias</h1>
+            <p>Bibliografía consultada para la elaboración del contenido educativo de la plataforma.</p>
+        </header>
+
+        <div class="ref-container">
+            <h3 class="ref-section-title">Referencias</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">AGENCIA de MEDIO AMBIENTE (2004). Señales medioambientales de la AEMA, AEMA, Copenhague.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">ALLENBY, B R. & D. J. Rickards (Eds.) (1994). The greening of industrial ecosystems, Washington, National Academy Press.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">CARSON, R. (1962). Silent Spring, London, Penguin.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">COMISIÓN MUNDIAL sobre el MEDIO AMBIENTE y DESARROLLO(1987). Nuestro futuro común, Oxford, Oxford University Press.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">CONSEJO de la EVALUACIÓN de los ECOSISTEMAS del MILENIO (2005).</div>
+            </div>
+
+            <h3 class="ref-section-title">Bibliografía</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Belausteguigoitia Rius Juan Carlos. Avances en la institucionalización del desarrollo sustentable en México. Reflexiones y avances hacia un desarrollo sustentable en México. Obtenido el día 26 de mayo 2007 de, http://www. redmeso. net</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Bismark, Eugenio (2006). Historia Económica de México. Obtenido el día 26 de mayo de 2007, de http://economiamexico.com</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Constitución Política de los Estados Unidos Mexicanos, Capítulo I de las Garantías Individuales Artículo 25.</div>
+            </div>
+
+            <h3 class="ref-section-title">Referencias Bibliográficas</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Achterberg, W. (1996). Sustainability and associative democracy. En Lafferty, W. M., Meadowcroft, J. (eds.), Democracy and the environment: problems and prospects. Cheltenham: Edward Elgar.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Agyeman, J. (2005). Environmental Justice and Sustainable Communities. New York: New York University Press.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Agyeman, J., Bullard, R. D., Evans, B. (2002). Exploring the nexus: Bringing together sustainability, environmental justice and equity. Space policy, 6 (1), 77-90.</div>
+            </div>
+
+            <h3 class="ref-section-title">Bibliografía</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Boff, L. 2013. La sostenibilidad. Qué es y qué no es. Ed. Sal Terrae. P. 192. Maliñao. España. ISBN: 9788429321005</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Cantú-Martínez, P.C. 2013. Conciencia y construcción social de la sustentabilidad. Ciencia UANL. Volumen (16): 36-44.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Cantú-Martínez, P. C. 2015. Calidad de vida y sustentabilidad: una nueva ciudadanía. Ambiente y Desarrollo, Volumen (37): 09-21</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Cuervo M. y col. 2009. Las teorías del desarrollo y las desigualdades regionales: una revisión bibliográfica. Análisis Económico. Volumen (24):365-383</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Elizalde, H.A. 2003. Desde el desarrollo sustentable hacia sociedades sustentables. Polis, Revista de la Universidad Bolivariana. Volumen (1) :4.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Fernández, D. R. 2011. La quiebra del capitalismo global: 2000–2030. Ed. Libros en Acción / Virus / Baladre. Madrid. España. ISBN: 9788493678579</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Ferrer, A. 2010. Raúl Prebisch y el dilema del desarrollo en el mundo global. Revista CEPAL. Volumen (101):7-15</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Fonseca, R. 2019. El desarrollo sostenible humano local: La evolución de la inclusión del territorio en las teorías del desarrollo. Economía y Desarrollo. Volumen (162):18- 24</div>
+            </div>
+
+            <h3 class="ref-section-title">Referencias bibliográficas</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Ballesteros Flores, Teresa y Demófilo Román Jaimes. “Educación ambiental en el aula para la sustentabilidad.” Revista COEPES, año 2014, Vol. 4, Núm. 10</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Borrayo López, Rafael. (2001). Sustentabilidad y desarrollo económico. España: McGraw-Hill/Interamericana.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Carta de Belgrado. https://unesdoc.unesco.org/ark:/48223/pdf0000017772_spa.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Foladori, Guillermo y Naína Pierri. (2005) ¿Sustentabillidad?: desacuerdos sobre el desarrollo sustentable. México: Porrúa.</div>
+            </div>
+
+            <h3 class="ref-section-title">Bibliografía</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Acosta, A. (23 de diciembre de 2011). Extractivismo y neoextractivismo: dos caras de la misma maldición. La línea de fuego. https://lalineadefuego.info/extractivismo-y-neoextractivismo-doscaras-de-la-misma-maldicion-por-alberto-acosta/</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Acosta, M. I. (2023). Educación geográfica, activismo ambiental y participación juvenil desde el Sur Global. Pleamar. Revista del Departamento de Geografía, (3), 7-29.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Acosta, M. I. y Nin, M. C. (2023). Educación geográfica en clave de los Objetivos de Desarrollo Sostenible (ODS). Geograficando, 19(1), e127. https://doi.org/10.24215/2346898Xe127</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Araya Palacios, F. (2010). Educación Geográfica para la sustentabilidad. Universidad de La Serena.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Bachmann, L. (2011). Recursos naturales y servicios ambientales. Reflexiones sobre tipos de manejo. En R. Gurevich (comp.), Ambiente y Educación. Una apuesta al futuro (pp. 75-80). Paidós.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Canciani, M. L. y Telias, A. (2013). Aportes teóricos conceptuales para pensar los procesos educativos en escenarios de conflicto ambiental. Revista Del IICE, (34), 111-122. http://revistascientificas.filo.uba.ar/index.php/iice/article/view/1446</div>
+            </div>
+
+            <h3 class="ref-section-title">El Debate sobre el Desarrollo Sostenible</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">ARIAS, M. A. Desarrollo sustentable: una propuesta ante la desilusión del progreso. Ciudad de México, DF: Academia Nacional de Educación Ambiental, 2003. Disponível em: . Acesso em: 27 fev. 2011.</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">BARRANTES, R. Desarrollo: sostenido, sostenible, sustentable, ¿O simplemente desarrollo? Revista Agrario: Debate y Alternativa, Lima, n. 17, p. 1-12, 1993. Disponível em: . Acesso em: 27 fev. 2011.</div>
+            </div>
+
+            <h3 class="ref-section-title">Referencias Adicionales</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Caballos, F., Betancur Villegas, J. P., & Betancur Villegas, J. D. (2014). Simulación Discreta Aplicada a los Modelos de Atención en Salud. Investigación e Innovación en Ingenierías, 2(2), 10-14. doi:10.17081/invinno.2.2.2045</div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="ref-text">Friedman, M. (2012). Neoliberalismo. Finanzas y Economía. Consultado de: https://goo.gl/ HijJC5</div>
+            </div>
+
+            <h3 class="ref-section-title">Documentos Originales de la Plataforma</h3>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-globe"></i></div>
+                <div class="ref-text">
+                    <span class="ref-author">Comisión Económica para América Latina y el Caribe (CEPAL).</span> (2016).
+                    <span class="ref-title">Agenda 2030 y los Objetivos de Desarrollo Sostenible: Una oportunidad para América Latina y el Caribe.</span>
+                    Santiago: Naciones Unidas.
+                    <br>
+                    <a href="pdf/libro_agenda2030.pdf" target="_blank" class="source-link">Ver Documento <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-file-contract"></i></div>
+                <div class="ref-text">
+                    <span class="ref-author">Gudiño Pérez, P., & Sánchez Martínez, A.</span> (2019).
+                    <span class="ref-title">Introducción al Desarrollo Sustentable.</span>
+                    Reporte de investigación del proyecto 1020 "La mercadotecnia frente al paradigma de la sustentabilidad". Consejo Divisional de Ciencias Sociales y Humanidades.
+                    <br>
+                    <a href="pdf/libro_intro.pdf" target="_blank" class="source-link">Ver Documento <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-university"></i></div>
+                <div class="ref-text">
+                    <span class="ref-author">Guzmán López, O.</span> (s.f.).
+                    <span class="ref-title">Energías Renovables y el Desarrollo Sustentable en un Ámbito Bibliotecario.</span>
+                    Centro de Investigación en Recursos Energéticos y Sustentables (IRES), Universidad Veracruzana.
+                    <br>
+                    <a href="pdf/libro_energias.pdf" target="_blank" class="source-link">Ver Documento <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-book-open"></i></div>
+                <div class="ref-text">
+                    <span class="ref-author">Raidán Martínez, G.</span> (s.f.).
+                    <span class="ref-title">El desarrollo sustentable.</span>
+                    Revista Población y Desarrollo. Recuperado de Dialnet.
+                    <br>
+                    <a href="pdf/libro_dialnet.pdf" target="_blank" class="source-link">Ver Documento <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-flask"></i></div>
+                <div class="ref-text">
+                    <span class="ref-author">El Bibliotecom.</span> (s.f.).
+                    <span class="ref-title">Ciencias naturales y medio ambiente: Las disciplinas de las ciencias naturales.</span>
+                    Capítulo 1, Tema 4: Ciencia y sociedad.
+                    <br>
+                    <a href="pdf/libro_ciencias.pdf" target="_blank" class="source-link">Ver Documento <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </div>
+            <div class="ref-item">
+                <div class="ref-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <div class="ref-text">
+                    <span class="ref-author">SBDA.</span> (s.f.).
+                    <span class="ref-title">Desarrollo Sustentable [Material de presentación].</span>
+                    Contiene información sobre los 4 pilares del desarrollo sostenible.
+                    <br>
+                    <a href="pdf/libro_desarrollo.pdf" target="_blank" class="source-link">Ver Documento <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script type="module" src="logic.js"></script>
+</body>
+</html>
