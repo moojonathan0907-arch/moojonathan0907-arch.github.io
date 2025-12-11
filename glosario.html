@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glosario | Raíces Sociales</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Paleta Original */
+            --primary-color: #009688;
+            --primary-dark: #00695c;
+            --bg-color: #f3f6f8;
+            --sidebar-width: 250px;
+            --text-dark: #1a202c;
+            --text-muted: #718096;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
+            
+            /* Colores Glosario */
+            --term-bg: #ffffff;
+            --term-border: #e2e8f0;
+            --highlight: #e0f2f1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background-color: var(--bg-color); display: flex; height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e0e0e0;
+            position: fixed;
+            height: 100%;
+            z-index: 10;
+        }
+
+        /* --- ESTILO DEL LOGO (Igual al Index) --- */
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            color: #004d40;
+        }
+
+        .logo-img {
+            width: 40px;
+            height: 40px; /* Asegura que sea cuadrado */
+            object-fit: contain;
+            margin-right: 12px; /* Espacio exacto */
+            display: block;
+        }
+
+        .logo h2 { font-size: 18px; font-weight: 700; margin: 0; }
+        .logo span { font-size: 12px; color: var(--text-muted); display: block; font-weight: 400; }
+
+        .nav-links { list-style: none; }
+        .nav-links li { margin-bottom: 15px; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            background-color: #e0f2f1;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        .nav-links a i { margin-right: 12px; width: 20px; text-align: center; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px 50px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        /* Título Simple */
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0f2f1;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            color: var(--text-dark);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        /* Navegación interna (Tabs) */
+        .tabs-container { display: flex; gap: 12px; margin-bottom: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; }
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .tab-btn.active { background-color: var(--primary-color); color: white; box-shadow: 0 4px 12px rgba(0, 150, 136, 0.2); }
+        .tab-btn:not(.active):hover { background-color: #e2e8f0; color: var(--text-dark); }
+
+        /* Controles */
+        .glossary-controls {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .search-box { position: relative; margin-bottom: 20px; }
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+        .search-box input:focus { border-color: var(--primary-color); }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+        .alphabet-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: space-between;
+        }
+        
+        .letter-btn {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .letter-btn:hover { background-color: #f1f5f9; color: var(--primary-color); }
+        .letter-btn.active { background-color: var(--primary-color); color: white; }
+        .letter-btn.disabled { opacity: 0.3; cursor: default; }
+
+        /* Grid de Términos */
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .term-card {
+            background: white;
+            border: 1px solid var(--term-border);
+            border-radius: var(--radius);
+            padding: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .term-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            border-color: #b2dfdb;
+        }
+
+        .term-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--primary-color);
+            opacity: 0.7;
+        }
+
+        .term-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .term-category {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            background-color: var(--highlight);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .term-definition {
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .letter-divider {
+            grid-column: 1 / -1;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin: 20px 0 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 5px;
+            opacity: 0.5;
+        }
+        /* --- ESTILOS PARA MÓVILES (RESPONSIVE) --- */
+
+        /* 1. Botón del menú (Oculto en PC, Visible en Móvil) */
+        .menu-btn {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2000;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* 2. Reglas cuando la pantalla es menor a 768px (Tablets y Celulares) */
+        @media (max-width: 768px) {
+            
+            /* Ocultar la barra lateral moviéndola a la izquierda */
+            .sidebar {
+                left: -260px; /* Se esconde fuera de la pantalla */
+                transition: left 0.3s ease; /* Animación suave */
+                width: 250px;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+
+            /* Clase para mostrar la barra cuando se activa */
+            .sidebar.active {
+                left: 0; /* Vuelve a su lugar */
+            }
+
+            /* Ajustar el contenido principal para que ocupe todo el ancho */
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 40px 20px; /* Más padding arriba para el botón */
+                width: 100%;
+            }
+
+            /* Mostrar el botón de menú */
+            .menu-btn {
+                display: block;
+            }
+
+            /* Convertir todas las rejillas (Grids) a una sola columna */
+            .metrics-grid, 
+            .quick-access-grid, 
+            .books-grid, 
+            .quiz-grid, 
+            .terms-grid, 
+            .resources-grid, 
+            .dashboard-grid,
+            .details-grid {
+                grid-template-columns: 1fr; /* 1 sola columna */
+                gap: 20px;
+            }
+
+            /* Ajustes específicos para tarjetas y textos */
+            .welcome-card h1 { font-size: 24px; }
+            .page-header h1 { font-size: 24px; }
+            
+            /* Ajustes para el Glosario y Biblioteca (Buscadores) */
+            .glossary-controls { flex-direction: column; align-items: stretch; }
+            .search-box input { width: 100%; }
+            .tabs-container { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="menuToggle" class="menu-btn">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="logo.png" alt="Logo" class="logo-img">
+            <div>
+                <h2>Raíces Sociales</h2>
+                <span>Educación sustentable</span>
+            </div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Inicio</a></li>
+            <li><a href="biblioteca.html"><i class="fa-solid fa-book-open"></i> Biblioteca</a></li>
+            <li><a href="glosario.html" class="active"><i class="fa-solid fa-book"></i> Glosario</a></li>
+            <li><a href="cuestionarios.html"><i class="fa-solid fa-graduation-cap"></i> Cuestionarios</a></li>
+            <li><a href="recursos.html"><i class="fa-solid fa-seedling"></i> Sustentabilidad</a></li>
+            <li><a href="linea_tiempo.html"><i class="fa-solid fa-clock-rotate-left"></i> Línea de Tiempo</a></li>
+            <li><a href="progreso.html"><i class="fa-solid fa-trophy"></i> Mi Progreso</a></li>
+            <li><a href="referencias.html"><i class="fa-solid fa-book-bookmark"></i> Referencias</a></li>
+            <li><a href="soporte.html"><i class="fa-solid fa-headset"></i> Contacto</a></li>
+
+            <li id="userProfile" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; text-align: center;">
+                <img id="userPhoto" src="" alt="Perfil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid var(--primary-color);">
+                <div id="userName" style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">Usuario</div>
+                <a href="#" onclick="logoutGoogle()" style="color: #ef5350; font-size: 12px; text-decoration: none; display: inline-block;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                </a>
+            </li>
+
+            <li id="loginBtnLi" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+                <a href="#" onclick="loginGoogle()">
+                    <i class="fa-brands fa-google"></i> Iniciar Sesión
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <div class="page-header">
+            <h1>Biblioteca de Conocimiento</h1>
+            <p>Explora libros, conceptos, biografías y recursos educativos.</p>
+        </div>
+
+        <section class="tabs-container">
+            <a href="biblioteca.html" class="tab-btn">Libros</a>
+            <a href="#" class="tab-btn active">Glosario</a>
+        </section>
+
+        <section class="glossary-controls">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar término (ej. Huella de Carbono)...">
+            </div>
+            
+            <div class="alphabet-filter">
+                <span class="letter-btn active">Todos</span>
+                <span class="letter-btn">A</span><span class="letter-btn">B</span><span class="letter-btn">C</span>
+                <span class="letter-btn">D</span><span class="letter-btn">E</span><span class="letter-btn">F</span>
+                <span class="letter-btn">G</span><span class="letter-btn">H</span><span class="letter-btn">I</span>
+                <span class="letter-btn">J</span><span class="letter-btn disabled">K</span><span class="letter-btn">L</span>
+                <span class="letter-btn">M</span><span class="letter-btn disabled">N</span><span class="letter-btn">O</span>
+                <span class="letter-btn">P</span><span class="letter-btn disabled">Q</span><span class="letter-btn">R</span>
+                <span class="letter-btn">S</span><span class="letter-btn">T</span><span class="letter-btn disabled">U</span>
+                <span class="letter-btn disabled">V</span><span class="letter-btn disabled">W</span><span class="letter-btn disabled">X</span>
+                <span class="letter-btn disabled">Y</span><span class="letter-btn disabled">Z</span>
+            </div>
+        </section>
+
+        <div class="terms-grid">
+            
+            <div class="letter-divider" id="A">A</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Agenda 2030 <span class="term-category">Global</span>
+                </div>
+                <p class="term-definition">
+                    Plan de acción global adoptado por la ONU que establece una visión transformadora hacia la sostenibilidad económica, social y ambiental para los 193 Estados Miembros durante 15 años.
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Agricultura Sostenible <span class="term-category">Alimentación</span>
+                </div>
+                <p class="term-definition">
+                    Prácticas agrícolas resilientes que aumentan la productividad, contribuyen al mantenimiento de los ecosistemas y fortalecen la capacidad de adaptación al cambio climático.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="B">B</div>
+            
+            <div class="term-card">
+                <div class="term-title">
+                    Biodiversidad <span class="term-category">Ecología</span>
+                </div>
+                <p class="term-definition">
+                    Variedad de ecosistemas y especies que cubren la superficie terrestre. Su pérdida es un reto para el desarrollo sostenible, ya que proporcionan seguridad alimentaria y refugio.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="C">C</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Cambio Climático <span class="term-category">Clima</span>
+                </div>
+                <p class="term-definition">
+                    Reto global que afecta a todos los continentes, con un impacto negativo en la economía y la vida de las personas, exacerbado por las emisiones de gases de efecto invernadero.
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Capacidad de Carga <span class="term-category">Sistemas</span>
+                </div>
+                <p class="term-definition">
+                    Límite de los sistemas naturales que no debe ser comprometido al intentar satisfacer las necesidades básicas de la generación presente.
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Capital Natural <span class="term-category">Economía</span>
+                </div>
+                <p class="term-definition">
+                    Stock de recursos naturales (geología, suelo, aire, agua y todos los seres vivos) que proporcionan flujo de bienes y servicios ecosistémicos.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="D">D</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Derechos Humanos Ambientales <span class="term-category">Legal</span>
+                </div>
+                <p class="term-definition">
+                    El reconocimiento de que un medio ambiente seguro, limpio, saludable y sostenible es integral para el pleno disfrute de una amplia gama de derechos humanos.
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Desarrollo Sustentable <span class="term-category">Concepto</span>
+                </div>
+                <p class="term-definition">
+                    Es el desarrollo que satisface las necesidades de las generaciones presentes sin comprometer la capacidad de las generaciones futuras para satisfacer sus propias necesidades.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="E">E</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Economía Verde <span class="term-category">Economía</span>
+                </div>
+                <p class="term-definition">
+                    Sistema de actividades económicas que resulta en mejoras del bienestar humano a largo plazo, sin exponer a las generaciones futuras a riesgos ambientales significativos.
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Eficiencia Energética <span class="term-category">Energía</span>
+                </div>
+                <p class="term-definition">
+                    Objetivo de reducir la cantidad de energía requerida para proporcionar productos y servicios, fundamental para disminuir emisiones y costos.
+                </p>
+            </div>
+
+             <div class="term-card">
+                <div class="term-title">
+                    Energías Renovables <span class="term-category">Energía</span>
+                </div>
+                <p class="term-definition">
+                    Energías limpias que contribuyen a cuidar el medio ambiente frente a los efectos contaminantes y el agotamiento de los combustibles fósiles (ej. solar, eólica).
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Equidad Intergeneracional <span class="term-category">Ética</span>
+                </div>
+                <p class="term-definition">
+                    Principio de justicia que exige que las generaciones presentes administren los recursos de manera que no comprometan la capacidad de las futuras generaciones para sobrevivir.
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Externalidades <span class="term-category">Economía</span>
+                </div>
+                <p class="term-definition">
+                    Costos o beneficios de una actividad económica que afectan a terceros y no se reflejan en los precios de mercado (ej. contaminación como externalidad negativa).
+                </p>
+            </div>
+
+            <div class="letter-divider" id="H">H</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Huella Ecológica <span class="term-category">Indicador</span>
+                </div>
+                <p class="term-definition">
+                    Medida del impacto de las actividades humanas sobre la naturaleza, representada por la superficie necesaria para producir los recursos y absorber los residuos.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="I">I</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Innovación Sustentable <span class="term-category">Tecnología</span>
+                </div>
+                <p class="term-definition">
+                    Desarrollo de nuevos productos, procesos o servicios que generan valor económico mientras reducen significativamente los impactos ambientales negativos.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="J">J</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Justicia Ambiental <span class="term-category">Social</span>
+                </div>
+                <p class="term-definition">
+                    Trato justo y participación significativa de todas las personas, independientemente de su origen, en el desarrollo y aplicación de leyes y políticas ambientales.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="M">M</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Manejo Forestal Sustentable <span class="term-category">Ecología</span>
+                </div>
+                <p class="term-definition">
+                    Administración y uso de los bosques y terrenos forestales de manera que mantengan su biodiversidad, productividad y capacidad de regeneración.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="O">O</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    ODS <span class="term-category">Metas</span>
+                </div>
+                <p class="term-definition">
+                    Siglas de "Objetivos de Desarrollo Sostenible". Son 17 objetivos globales que buscan erradicar la pobreza, proteger el planeta y asegurar la prosperidad para todos.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="P">P</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Pobreza Extrema <span class="term-category">Social</span>
+                </div>
+                <p class="term-definition">
+                    Condición definida internacionalmente como vivir con menos de 1,25 dólares de los Estados Unidos al día.
+                </p>
+            </div>
+
+            <div class="letter-divider" id="R">R</div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Recursos Naturales <span class="term-category">Ecología</span>
+                </div>
+                <p class="term-definition">
+                    Elementos de la naturaleza (renovables y no renovables) que la sociedad utiliza para satisfacer sus necesidades y desarrollar actividades productivas.
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Resiliencia <span class="term-category">Adaptación</span>
+                </div>
+                <p class="term-definition">
+                    Capacidad de las personas y comunidades para adaptarse y recuperarse frente a fenómenos extremos relacionados con el clima y otros desastres.
+                </p>
+            </div>
+
+            <div class="term-card">
+                <div class="term-title">
+                    Responsabilidad Social <span class="term-category">Empresa</span>
+                </div>
+                <p class="term-definition">
+                    Compromiso ético de las organizaciones ante los impactos que sus decisiones y actividades generan en la sociedad y el medio ambiente.
+                </p>
+            </div>
+
+             <div class="letter-divider" id="S">S</div>
+
+             <div class="term-card">
+                 <div class="term-title">
+                     Seguridad Alimentaria <span class="term-category">Salud</span>
+                 </div>
+                 <p class="term-definition">
+                     Acceso de todas las personas a una alimentación sana, nutritiva y suficiente durante todo el año para poner fin al hambre y la malnutrición.
+                 </p>
+             </div>
+
+             <div class="letter-divider" id="T">T</div>
+
+             <div class="term-card">
+                 <div class="term-title">
+                     Tecnologías Limpias <span class="term-category">Tecnología</span>
+                 </div>
+                 <p class="term-definition">
+                     Procesos, productos o servicios que reducen o eliminan los residuos y la contaminación en el origen, optimizando el uso de recursos naturales.
+                 </p>
+             </div>
+
+        </div>
+
+    </main>
+
+    <script type="module" src="logic.js"></script>
+</body>
+</html>
